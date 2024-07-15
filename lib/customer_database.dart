@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:floor/floor.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
 import 'package:path/path.dart';
+part 'customer_database.g.dart';
 
 // Entity
 @Entity(tableName: 'customers')
