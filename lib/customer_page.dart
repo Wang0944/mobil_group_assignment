@@ -7,6 +7,8 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'dart:async';
 
 class CustomerPage extends StatefulWidget {
+  const CustomerPage({super.key});
+
   @override
   _CustomerPageState createState() => _CustomerPageState();
 }
@@ -14,11 +16,11 @@ class CustomerPage extends StatefulWidget {
 class _CustomerPageState extends State<CustomerPage> {
   late AppDatabase database;
   List<Customer> customers = [];
+  Customer? selectedCustomer;
   final firstNameController = TextEditingController();
   final lastNameController = TextEditingController();
   final addressController = TextEditingController();
   final birthdayController = TextEditingController();
-  bool copyPrevious = false;
 
   @override
   void initState() {
@@ -76,135 +78,190 @@ class _CustomerPageState extends State<CustomerPage> {
     birthdayController.clear();
   }
 
+  void selectCustomer(Customer customer) {
+    setState(() {
+      selectedCustomer = customer;
+      firstNameController.text = customer.firstName;
+      lastNameController.text = customer.lastName;
+      addressController.text = customer.address;
+      birthdayController.text = customer.birthday;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
+    var size = MediaQuery.of(context).size;
+    var isLandscape = size.width > size.height && size.width > 720;
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Customer Page'),
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView.builder(
-              itemCount: customers.length,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text('${customers[index].firstName} ${customers[index].lastName}'),
-                  subtitle: Text(customers[index].address),
-                  onTap: () {
-                    setState(() {
-                      firstNameController.text = customers[index].firstName;
-                      lastNameController.text = customers[index].lastName;
-                      addressController.text = customers[index].address;
-                      birthdayController.text = customers[index].birthday;
-                    });
-                  },
-                  trailing: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      IconButton(
-                        icon: Icon(Icons.edit),
-                        onPressed: () {
-                          setState(() {
-                            firstNameController.text = customers[index].firstName;
-                            lastNameController.text = customers[index].lastName;
-                            addressController.text = customers[index].address;
-                            birthdayController.text = customers[index].birthday;
-                          });
-                        },
-                      ),
-                      IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () {
-                          deleteCustomer(customers[index]);
-                        },
-                      ),
-                    ],
-                  ),
-                );
+        title: const Text('Customer Page'),
+        actions: [
+          if (selectedCustomer != null)
+            IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () {
+                setState(() {
+                  selectedCustomer = null;
+                });
               },
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Column(
-              children: [
-                TextField(
-                  controller: firstNameController,
-                  decoration: InputDecoration(labelText: 'First Name'),
-                ),
-                TextField(
-                  controller: lastNameController,
-                  decoration: InputDecoration(labelText: 'Last Name'),
-                ),
-                TextField(
-                  controller: addressController,
-                  decoration: InputDecoration(labelText: 'Address'),
-                ),
-                TextField(
-                  controller: birthdayController,
-                  decoration: InputDecoration(labelText: 'Birthday'),
-                ),
-                Row(
+        ],
+      ),
+      body: isLandscape ? buildLandscapeLayout() : buildPortraitLayout(),
+    );
+  }
+
+  Widget buildLandscapeLayout() {
+    return Row(
+      children: [
+        Expanded(flex: 1, child: buildCustomerListView(showForm: false)),
+        Expanded(flex: 2, child: buildCustomerDetailsView()),
+      ],
+    );
+  }
+
+  Widget buildPortraitLayout() {
+    return selectedCustomer == null
+        ? buildCustomerListView(showForm: true)
+        : buildCustomerDetailsView(showBackButton: true);
+  }
+
+  Widget buildCustomerListView({bool showForm = false}) {
+    return Column(
+      children: [
+        Expanded(
+          child: ListView.builder(
+            itemCount: customers.length,
+            itemBuilder: (context, index) {
+              return ListTile(
+                title: Text('${customers[index].firstName} ${customers[index].lastName}'),
+                subtitle: Text(customers[index].address),
+                onTap: () => selectCustomer(customers[index]),
+                trailing: Row(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    ElevatedButton(
-                      child: Text('Save'),
+                    IconButton(
+                      icon: const Icon(Icons.edit),
                       onPressed: () {
-                        if (firstNameController.text.isNotEmpty &&
-                            lastNameController.text.isNotEmpty &&
-                            addressController.text.isNotEmpty &&
-                            birthdayController.text.isNotEmpty) {
-                          final newCustomer = Customer(
-                            firstName: firstNameController.text,
-                            lastName: lastNameController.text,
-                            address: addressController.text,
-                            birthday: birthdayController.text,
-                          );
-                          insertCustomer(newCustomer);
-                          savePreferences(newCustomer);
-                          clearForm();
-                        } else {
-                          final snackBar = SnackBar(
-                            content: Text('All fields are required!'),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
+                        setState(() {
+                          firstNameController.text = customers[index].firstName;
+                          lastNameController.text = customers[index].lastName;
+                          addressController.text = customers[index].address;
+                          birthdayController.text = customers[index].birthday;
+                          selectedCustomer = customers[index];
+                        });
                       },
                     ),
-                    SizedBox(width: 8),
-                    ElevatedButton(
-                      child: Text('Update'),
+                    IconButton(
+                      icon: const Icon(Icons.delete),
                       onPressed: () {
-                        if (firstNameController.text.isNotEmpty &&
-                            lastNameController.text.isNotEmpty &&
-                            addressController.text.isNotEmpty &&
-                            birthdayController.text.isNotEmpty) {
-                          final updatedCustomer = Customer(
-                            id: customers.firstWhere((c) =>
-                            c.firstName == firstNameController.text &&
-                                c.lastName == lastNameController.text).id,
-                            firstName: firstNameController.text,
-                            lastName: lastNameController.text,
-                            address: addressController.text,
-                            birthday: birthdayController.text,
-                          );
-                          updateCustomer(updatedCustomer);
-                          clearForm();
-                        } else {
-                          final snackBar = SnackBar(
-                            content: Text('All fields are required!'),
-                          );
-                          ScaffoldMessenger.of(context).showSnackBar(snackBar);
-                        }
+                        deleteCustomer(customers[index]);
                       },
                     ),
                   ],
                 ),
-              ],
-            ),
+              );
+            },
           ),
-        ],
+        ),
+        if (showForm) buildForm(),
+      ],
+    );
+  }
+
+  Widget buildCustomerDetailsView({bool showBackButton = false}) {
+    return Scaffold(
+      appBar: showBackButton
+          ? AppBar(
+        leading: BackButton(onPressed: () {
+          setState(() {
+            selectedCustomer = null;
+          });
+        }),
+        title: const Text('Customer Details'),
+      )
+          : null,
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: buildForm(),
       ),
+    );
+  }
+
+  Widget buildForm() {
+    return Column(
+      children: [
+        TextField(
+          controller: firstNameController,
+          decoration: const InputDecoration(labelText: 'First Name'),
+        ),
+        TextField(
+          controller: lastNameController,
+          decoration: const InputDecoration(labelText: 'Last Name'),
+        ),
+        TextField(
+          controller: addressController,
+          decoration: const InputDecoration(labelText: 'Address'),
+        ),
+        TextField(
+          controller: birthdayController,
+          decoration: const InputDecoration(labelText: 'Birthday'),
+        ),
+        Row(
+          children: [
+            ElevatedButton(
+              child: const Text('Save'),
+              onPressed: () {
+                if (firstNameController.text.isNotEmpty &&
+                    lastNameController.text.isNotEmpty &&
+                    addressController.text.isNotEmpty &&
+                    birthdayController.text.isNotEmpty) {
+                  final newCustomer = Customer(
+                    firstName: firstNameController.text,
+                    lastName: lastNameController.text,
+                    address: addressController.text,
+                    birthday: birthdayController.text,
+                  );
+                  insertCustomer(newCustomer);
+                  savePreferences(newCustomer);
+                  clearForm();
+                } else {
+                  final snackBar = SnackBar(
+                    content: const Text('All fields are required!'),
+                  );
+                  ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
+                }
+              },
+            ),
+            const SizedBox(width: 8),
+            ElevatedButton(
+              child: const Text('Update'),
+              onPressed: () {
+                if (firstNameController.text.isNotEmpty &&
+                    lastNameController.text.isNotEmpty &&
+                    addressController.text.isNotEmpty &&
+                    birthdayController.text.isNotEmpty) {
+                  final updatedCustomer = Customer(
+                    id: selectedCustomer?.id,
+                    firstName: firstNameController.text,
+                    lastName: lastNameController.text,
+                    address: addressController.text,
+                    birthday: birthdayController.text,
+                  );
+                  updateCustomer(updatedCustomer);
+                  clearForm();
+                } else {
+                  final snackBar = SnackBar(
+                    content: const Text('All fields are required!'),
+                  );
+                  ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
+                }
+              },
+            ),
+          ],
+        ),
+      ],
     );
   }
 }
