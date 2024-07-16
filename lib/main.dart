@@ -46,7 +46,7 @@ class _MainPageState extends State<MainPage> {
                 builder: (BuildContext context) {
                   return AlertDialog(
                     title: const Text('Instructions'),
-                    content: const Text('Instructions for using the app.'),
+                    content: const Text('This is a group assignment, each group member will focus on their own page. You can use 4 subpages'),
                     actions: [
                       TextButton(
                         child: const Text('OK'),

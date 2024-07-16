@@ -132,15 +132,28 @@ class _CustomerPageState extends State<CustomerPage> {
       appBar: AppBar(
         title: const Text('Customer Page'),
         actions: [
-          if (selectedCustomer != null)
-            IconButton(
-              icon: const Icon(Icons.clear),
-              onPressed: () {
-                setState(() {
-                  selectedCustomer = null;
-                });
-              },
-            ),
+          IconButton(
+            icon: const Icon(Icons.info),
+            onPressed: () {
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Instructions'),
+                    content: const Text('This is the customer page, you can add, modify, and delete users'),
+                    actions: [
+                      TextButton(
+                        child: const Text('OK'),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+          ),
         ],
       ),
       body: isLandscape ? buildLandscapeLayout(context) : buildPortraitLayout(context),
