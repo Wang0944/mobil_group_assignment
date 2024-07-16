@@ -40,19 +40,22 @@ class _CustomerPageState extends State<CustomerPage> {
     setState(() {});
   }
 
-  Future<void> insertCustomer(Customer customer) async {
+  Future<void> insertCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.insertCustomer(customer);
     loadCustomers();
+    showSnackbar(context, 'Customer added successfully');
   }
 
-  Future<void> updateCustomer(Customer customer) async {
+  Future<void> updateCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.updateCustomer(customer);
     loadCustomers();
+    showSnackbar(context, 'Customer updated successfully');
   }
 
-  Future<void> deleteCustomer(Customer customer) async {
+  Future<void> deleteCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.deleteCustomer(customer);
     loadCustomers();
+    showSnackbar(context, 'Customer deleted successfully');
   }
 
   Future<void> savePreferences(Customer customer) async {
@@ -88,6 +91,38 @@ class _CustomerPageState extends State<CustomerPage> {
     });
   }
 
+  void showSnackbar(BuildContext context, String message) {
+    final snackBar = SnackBar(content: Text(message));
+    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+  }
+
+  void showDeleteConfirmationDialog(BuildContext context, Customer customer) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Delete Customer'),
+          content: const Text('Are you sure you want to delete this customer?'),
+          actions: [
+            TextButton(
+              child: const Text('No'),
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+            ),
+            TextButton(
+              child: const Text('Yes'),
+              onPressed: () async {
+                await deleteCustomer(context, customer);
+                Navigator.of(context).pop();
+              },
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     var size = MediaQuery.of(context).size;
@@ -108,26 +143,26 @@ class _CustomerPageState extends State<CustomerPage> {
             ),
         ],
       ),
-      body: isLandscape ? buildLandscapeLayout() : buildPortraitLayout(),
+      body: isLandscape ? buildLandscapeLayout(context) : buildPortraitLayout(context),
     );
   }
 
-  Widget buildLandscapeLayout() {
+  Widget buildLandscapeLayout(BuildContext context) {
     return Row(
       children: [
-        Expanded(flex: 1, child: buildCustomerListView(showForm: false)),
-        Expanded(flex: 2, child: buildCustomerDetailsView()),
+        Expanded(flex: 1, child: buildCustomerListView(context, showForm: false)),
+        Expanded(flex: 2, child: buildCustomerDetailsView(context)),
       ],
     );
   }
 
-  Widget buildPortraitLayout() {
+  Widget buildPortraitLayout(BuildContext context) {
     return selectedCustomer == null
-        ? buildCustomerListView(showForm: true)
-        : buildCustomerDetailsView(showBackButton: true);
+        ? buildCustomerListView(context, showForm: true)
+        : buildCustomerDetailsView(context, showBackButton: true);
   }
 
-  Widget buildCustomerListView({bool showForm = false}) {
+  Widget buildCustomerListView(BuildContext context, {bool showForm = false}) {
     return Column(
       children: [
         Expanded(
@@ -156,7 +191,7 @@ class _CustomerPageState extends State<CustomerPage> {
                     IconButton(
                       icon: const Icon(Icons.delete),
                       onPressed: () {
-                        deleteCustomer(customers[index]);
+                        showDeleteConfirmationDialog(context, customers[index]);
                       },
                     ),
                   ],
@@ -165,12 +200,12 @@ class _CustomerPageState extends State<CustomerPage> {
             },
           ),
         ),
-        if (showForm) buildForm(),
+        if (showForm) buildForm(context),
       ],
     );
   }
 
-  Widget buildCustomerDetailsView({bool showBackButton = false}) {
+  Widget buildCustomerDetailsView(BuildContext context, {bool showBackButton = false}) {
     return Scaffold(
       appBar: showBackButton
           ? AppBar(
@@ -184,12 +219,12 @@ class _CustomerPageState extends State<CustomerPage> {
           : null,
       body: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: buildForm(),
+        child: buildForm(context),
       ),
     );
   }
 
-  Widget buildForm() {
+  Widget buildForm(BuildContext context) {
     return Column(
       children: [
         TextField(
@@ -212,7 +247,7 @@ class _CustomerPageState extends State<CustomerPage> {
           children: [
             ElevatedButton(
               child: const Text('Save'),
-              onPressed: () {
+              onPressed: () async {
                 if (firstNameController.text.isNotEmpty &&
                     lastNameController.text.isNotEmpty &&
                     addressController.text.isNotEmpty &&
@@ -223,21 +258,18 @@ class _CustomerPageState extends State<CustomerPage> {
                     address: addressController.text,
                     birthday: birthdayController.text,
                   );
-                  insertCustomer(newCustomer);
+                  await insertCustomer(context, newCustomer);
                   savePreferences(newCustomer);
                   clearForm();
                 } else {
-                  final snackBar = SnackBar(
-                    content: const Text('All fields are required!'),
-                  );
-                  ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
+                  showSnackbar(context, 'All fields are required!');
                 }
               },
             ),
             const SizedBox(width: 8),
             ElevatedButton(
               child: const Text('Update'),
-              onPressed: () {
+              onPressed: () async {
                 if (firstNameController.text.isNotEmpty &&
                     lastNameController.text.isNotEmpty &&
                     addressController.text.isNotEmpty &&
@@ -249,13 +281,10 @@ class _CustomerPageState extends State<CustomerPage> {
                     address: addressController.text,
                     birthday: birthdayController.text,
                   );
-                  updateCustomer(updatedCustomer);
+                  await updateCustomer(context, updatedCustomer);
                   clearForm();
                 } else {
-                  final snackBar = SnackBar(
-                    content: const Text('All fields are required!'),
-                  );
-                  ScaffoldMessenger.of(context as BuildContext).showSnackBar(snackBar);
+                  showSnackbar(context, 'All fields are required!');
                 }
               },
             ),
