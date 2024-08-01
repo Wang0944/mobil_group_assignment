@@ -32,8 +32,10 @@ dependencies:
     sdk: flutter
   floor: ^1.2.0
   path_provider: ^2.0.2
-  intl: ^0.17.0
+  intl: ^0.18.1
   shared_preferences: ^2.0.6
+  flutter_localizations:
+    sdk: flutter
 
 
   # The following adds the Cupertino Icons font to your application.
@@ -45,6 +47,7 @@ dev_dependencies:
     sdk: flutter
   floor_generator: ^1.2.0
   build_runner: ^2.1.0
+  intl_utils: ^2.0.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
@@ -65,7 +68,9 @@ flutter:
   uses-material-design: true
 
   # To add assets to your application, add an assets section, like this:
-  # assets:
+  assets:
+    - assets/translation/intl_en.json
+    - assets/translation/intl_zh.json
   #   - images/a_dot_burr.jpeg
   #   - images/a_dot_ham.jpeg
 

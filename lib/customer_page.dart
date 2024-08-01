@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'app_localizations.dart'; // 导入本地化类
 import 'customer_database.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:floor/floor.dart';
@@ -7,7 +8,9 @@ import 'package:sqflite/sqflite.dart' as sqflite;
 import 'dart:async';
 
 class CustomerPage extends StatefulWidget {
-  const CustomerPage({super.key});
+  final Function(Locale) setLocale;
+
+  const CustomerPage({super.key, required this.setLocale});
 
   @override
   _CustomerPageState createState() => _CustomerPageState();
@@ -43,19 +46,19 @@ class _CustomerPageState extends State<CustomerPage> {
   Future<void> insertCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.insertCustomer(customer);
     loadCustomers();
-    showSnackbar(context, 'Customer added successfully');
+    showSnackbar(context, AppLocalizations.of(context).translate('customer_added'));
   }
 
   Future<void> updateCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.updateCustomer(customer);
     loadCustomers();
-    showSnackbar(context, 'Customer updated successfully');
+    showSnackbar(context, AppLocalizations.of(context).translate('customer_updated'));
   }
 
   Future<void> deleteCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.deleteCustomer(customer);
     loadCustomers();
-    showSnackbar(context, 'Customer deleted successfully');
+    showSnackbar(context, AppLocalizations.of(context).translate('customer_deleted'));
   }
 
   Future<void> savePreferences(Customer customer) async {
@@ -101,17 +104,17 @@ class _CustomerPageState extends State<CustomerPage> {
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: const Text('Delete Customer'),
-          content: const Text('Are you sure you want to delete this customer?'),
+          title: Text(AppLocalizations.of(context).translate('delete_customer')),
+          content: Text(AppLocalizations.of(context).translate('confirm_delete')),
           actions: [
             TextButton(
-              child: const Text('No'),
+              child: Text(AppLocalizations.of(context).translate('no')),
               onPressed: () {
                 Navigator.of(context).pop();
               },
             ),
             TextButton(
-              child: const Text('Yes'),
+              child: Text(AppLocalizations.of(context).translate('yes')),
               onPressed: () async {
                 await deleteCustomer(context, customer);
                 Navigator.of(context).pop();
@@ -130,8 +133,20 @@ class _CustomerPageState extends State<CustomerPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Customer Page'),
+        title: Text(AppLocalizations.of(context).translate('customer_page')),
         actions: [
+          TextButton(
+            child: Text('中文'),
+            onPressed: () {
+              widget.setLocale(Locale('zh'));
+            },
+          ),
+          TextButton(
+            child: Text('English'),
+            onPressed: () {
+              widget.setLocale(Locale('en'));
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.info),
             onPressed: () {
@@ -139,11 +154,11 @@ class _CustomerPageState extends State<CustomerPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Instructions'),
-                    content: const Text('This is the customer page, you can add, modify, and delete users'),
+                    title: Text(AppLocalizations.of(context).translate('instructions')),
+                    content: Text(AppLocalizations.of(context).translate('instructions_content')),
                     actions: [
                       TextButton(
-                        child: const Text('OK'),
+                        child: Text(AppLocalizations.of(context).translate('ok')),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -227,7 +242,7 @@ class _CustomerPageState extends State<CustomerPage> {
             selectedCustomer = null;
           });
         }),
-        title: const Text('Customer Details'),
+        title: Text(AppLocalizations.of(context).translate('customer_details')),
       )
           : null,
       body: Padding(
@@ -242,24 +257,24 @@ class _CustomerPageState extends State<CustomerPage> {
       children: [
         TextField(
           controller: firstNameController,
-          decoration: const InputDecoration(labelText: 'First Name'),
+          decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('first_name')),
         ),
         TextField(
           controller: lastNameController,
-          decoration: const InputDecoration(labelText: 'Last Name'),
+          decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('last_name')),
         ),
         TextField(
           controller: addressController,
-          decoration: const InputDecoration(labelText: 'Address'),
+          decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('address')),
         ),
         TextField(
           controller: birthdayController,
-          decoration: const InputDecoration(labelText: 'Birthday'),
+          decoration: InputDecoration(labelText: AppLocalizations.of(context).translate('birthday')),
         ),
         Row(
           children: [
             ElevatedButton(
-              child: const Text('Save'),
+              child: Text(AppLocalizations.of(context).translate('save')),
               onPressed: () async {
                 if (firstNameController.text.isNotEmpty &&
                     lastNameController.text.isNotEmpty &&
@@ -275,13 +290,13 @@ class _CustomerPageState extends State<CustomerPage> {
                   savePreferences(newCustomer);
                   clearForm();
                 } else {
-                  showSnackbar(context, 'All fields are required!');
+                  showSnackbar(context, AppLocalizations.of(context).translate('all_fields_required'));
                 }
               },
             ),
             const SizedBox(width: 8),
             ElevatedButton(
-              child: const Text('Update'),
+              child: Text(AppLocalizations.of(context).translate('update')),
               onPressed: () async {
                 if (firstNameController.text.isNotEmpty &&
                     lastNameController.text.isNotEmpty &&
@@ -297,7 +312,7 @@ class _CustomerPageState extends State<CustomerPage> {
                   await updateCustomer(context, updatedCustomer);
                   clearForm();
                 } else {
-                  showSnackbar(context, 'All fields are required!');
+                  showSnackbar(context, AppLocalizations.of(context).translate('all_fields_required'));
                 }
               },
             ),
