@@ -117,9 +117,11 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             ElevatedButton(
-              child: const Text('Page 2'),
+              child: const Text('Flights'),
               onPressed: () {
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => Page2()));
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => FlightsPage()));
               },
             ),
             ElevatedButton(
