@@ -6,12 +6,12 @@ class flights{
 
   @primaryKey
   final int id;
-  final String departing;
-  final String arriving;
+  final String departingFrom;
+  final String arrivingTo;
   final DateTime departTime;
   final DateTime arriveTime;
 
-  flights(this.id, this.departing, this.arriving, this.departTime, this.arriveTime){
+  flights(this.id, this.departingFrom, this.arrivingTo, this.departTime, this.arriveTime){
 
     if(id > ID) {
       ID = id + 1;
