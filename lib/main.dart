@@ -1,30 +1,59 @@
 import 'package:flutter/material.dart';
-import 'package:mobil_group/customer_page.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'customer_page.dart';
+import 'app_localizations.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+  @override
+  _MyAppState createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  Locale _locale = const Locale('en'); // 默认语言
+
+  void _setLocale(Locale locale) {
+    setState(() {
+      _locale = locale;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      locale: _locale,
+      supportedLocales: [
+        const Locale('en', ''),
+        const Locale('zh', ''),
+      ],
+      localizationsDelegates: [
+        AppLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+      ],
       title: 'Mobil_group_assignment',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home: const MainPage(title: 'Mobil_group_assignment'),
+      home: MainPage(
+        title: 'Mobil_group_assignment',
+        setLocale: _setLocale,
+      ),
     );
   }
 }
 
 class MainPage extends StatefulWidget {
-  const MainPage({super.key, required this.title});
+  const MainPage({super.key, required this.title, required this.setLocale});
 
   final String title;
+  final Function(Locale) setLocale;
 
   @override
   State<MainPage> createState() => _MainPageState();
@@ -38,6 +67,18 @@ class _MainPageState extends State<MainPage> {
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
         title: Text(widget.title),
         actions: [
+          TextButton(
+            child: const Text('中文'),
+            onPressed: () {
+              widget.setLocale(const Locale('zh'));
+            },
+          ),
+          TextButton(
+            child: const Text('English'),
+            onPressed: () {
+              widget.setLocale(const Locale('en'));
+            },
+          ),
           IconButton(
             icon: const Icon(Icons.info),
             onPressed: () {
@@ -45,11 +86,11 @@ class _MainPageState extends State<MainPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: const Text('Instructions'),
-                    content: const Text('Instructions for using the app.'),
+                    title: Text(AppLocalizations.of(context).translate('instructions')),
+                    content: Text(AppLocalizations.of(context).translate('instructions_content')),
                     actions: [
                       TextButton(
-                        child: const Text('OK'),
+                        child: Text(AppLocalizations.of(context).translate('ok')),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -67,11 +108,11 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              child: const Text('Customer Page'),
+              child: Text(AppLocalizations.of(context).translate('customer_page')),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CustomerPage()),
+                  MaterialPageRoute(builder: (context) => CustomerPage(setLocale: widget.setLocale)),
                 );
               },
             ),

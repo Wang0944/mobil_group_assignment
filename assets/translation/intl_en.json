@@ -1,0 +1,20 @@
+{
+  "title": "Customer Page",
+  "instructions": "Instructions",
+  "instructions_content": "1. To add a new customer, fill in the form and press 'Save'.\n2. To update an existing customer, select a customer from the list, modify the details, and press 'Update'.\n3. To delete a customer, press the delete icon next to the customer's name and confirm the deletion.\n4. In landscape mode, the customer list is displayed on the left and details on the right. In portrait mode, the details are shown after selecting a customer.",
+  "first_name": "First Name",
+  "last_name": "Last Name",
+  "address": "Address",
+  "birthday": "Birthday",
+  "save": "Save",
+  "update": "Update",
+  "delete_customer": "Delete Customer",
+  "delete_confirmation": "Are you sure you want to delete this customer?",
+  "yes": "Yes",
+  "no": "No",
+  "all_fields_required": "All fields are required!",
+  "close": "Close",
+  "customer_added": "Customer added successfully",
+  "customer_updated": "Customer updated successfully",
+  "customer_deleted": "Customer deleted successfully"
+}

@@ -1,0 +1,20 @@
+{
+  "title": "客户页面",
+  "instructions": "使用说明",
+  "instructions_content": "1. 要添加新客户，请填写表格并按“保存”。\n2. 要更新现有客户，请从列表中选择一个客户，修改详细信息，然后按“更新”。\n3. 要删除客户，请按客户姓名旁边的删除图标并确认删除。\n4. 在横屏模式下，客户列表显示在左侧，详细信息显示在右侧。在竖屏模式下，选择客户后会显示详细信息。",
+  "first_name": "名字",
+  "last_name": "姓氏",
+  "address": "地址",
+  "birthday": "生日",
+  "save": "保存",
+  "update": "更新",
+  "delete_customer": "删除客户",
+  "delete_confirmation": "您确定要删除此客户吗？",
+  "yes": "是",
+  "no": "否",
+  "all_fields_required": "所有字段都是必填的！",
+  "close": "关闭",
+  "customer_added": "客户添加成功",
+  "customer_updated": "客户更新成功",
+  "customer_deleted": "客户删除成功"
+}
