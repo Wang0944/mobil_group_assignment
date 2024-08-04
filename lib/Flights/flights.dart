@@ -1,6 +1,7 @@
 import 'package:floor/floor.dart';
 
-@entity
+
+@Entity(tableName: 'flights')
 class flights{
   static int ID = 1;
 
@@ -8,8 +9,10 @@ class flights{
   final int id;
   final String departingFrom;
   final String arrivingTo;
-  final DateTime departTime;
-  final DateTime arriveTime;
+
+  final String departTime;
+
+  final String arriveTime;
 
   flights(this.id, this.departingFrom, this.arrivingTo, this.departTime, this.arriveTime){
 

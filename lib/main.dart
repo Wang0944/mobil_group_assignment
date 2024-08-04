@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'Flights/flights_page.dart';
 import 'customer_page.dart';
 import 'app_localizations.dart';
 
@@ -121,7 +122,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => FlightsPage()));
+                    MaterialPageRoute(builder: (context) => FlightsPage(title: 'What is this',)));
               },
             ),
             ElevatedButton(
