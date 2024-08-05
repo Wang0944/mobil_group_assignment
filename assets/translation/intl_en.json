@@ -16,5 +16,16 @@
   "close": "Close",
   "customer_added": "Customer added successfully",
   "customer_updated": "Customer updated successfully",
-  "customer_deleted": "Customer deleted successfully"
+  "customer_deleted": "Customer deleted successfully",
+  "reservation_instructions": "Reservation Instructions",
+  "reservation_instructions_content": "Use this page to add and manage reservations.",
+  "reservations": "Reservations",
+  "enter_details": "Enter reservation details",
+  "add_reservation": "Add Reservation",
+  "ok": "OK",
+  "reservation_added": "Reservation added",
+  "reservation_updated": "Reservation updated",
+  "reservation_deleted": "Reservation deleted",
+  "change_language": "Change Language",
+  "customer_page": "Customer Page"
 }

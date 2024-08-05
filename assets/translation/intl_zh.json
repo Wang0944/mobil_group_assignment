@@ -16,5 +16,16 @@
   "close": "关闭",
   "customer_added": "客户添加成功",
   "customer_updated": "客户更新成功",
-  "customer_deleted": "客户删除成功"
+  "customer_deleted": "客户删除成功",
+  "reservations": "预订",
+  "enter_details": "输入预订详情",
+  "add_reservation": "添加预订",
+  "reservation_instructions": "预订须知",
+  "reservation_instructions_content": "使用此页面添加和管理预订。",
+  "ok": "好的",
+  "reservation_added": "预订已添加",
+  "reservation_updated": "预订已更新",
+  "reservation_deleted": "预订已删除",
+  "change_language": "更改语言",
+  "customer_page": "客户页面"
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'customer_page.dart';
+import 'reservation_page.dart';
 import 'app_localizations.dart';
 
 void main() {
@@ -15,7 +16,7 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  Locale _locale = const Locale('en'); // 默认语言
+  Locale _locale = const Locale('en');
 
   void _setLocale(Locale locale) {
     setState(() {
@@ -117,9 +118,12 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             ElevatedButton(
-              child: const Text('Page 2'),
+              child: const Text('Reservation Page'),
               onPressed: () {
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => Page2()));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => ReservationPage(setLocale: widget.setLocale)),
+                );
               },
             ),
             ElevatedButton(
