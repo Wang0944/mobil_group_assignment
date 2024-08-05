@@ -8,5 +8,5 @@ part 'flight_database.g.dart';
 
 @Database(version: 1, entities: [flights])
 abstract class flight_database extends FloorDatabase{
-  flight_DAO get getDAO;
+  flight_DAO get flightDAO;
 }

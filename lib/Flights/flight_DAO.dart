@@ -5,13 +5,13 @@ import 'flights.dart';
 abstract class flight_DAO{
 
   @insert
-  Future<void> insertFlight(flights trip);
+  Future<void> insertFlight(flights flight);
 
   @delete
-  Future<void> deleteFlight(flights trip);
+  Future<void> deleteFlight(flights flight);
 
   @update
-  Future<void> updateFlight(flights trip);
+  Future<void> updateFlight(flights flight);
 
   @Query('SELECT * from flights')
   Future< List< flights > > getFlights();

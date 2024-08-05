@@ -122,7 +122,7 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => FlightsPage(title: 'What is this',)));
+                    MaterialPageRoute(builder: (context) => FlightsPage()));
               },
             ),
             ElevatedButton(
