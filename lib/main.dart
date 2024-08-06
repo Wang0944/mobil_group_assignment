@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'Flights/flights_page.dart';
+import 'airplane_page.dart';
 import 'customer_page.dart';
 import 'reservation_page.dart';
 import 'app_localizations.dart';
@@ -11,6 +12,12 @@ void main() {
 
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
+
+
+  static void setLocale(BuildContext context, Locale newLocale) async {
+    _MyAppState? state = context.findAncestorStateOfType<_MyAppState>();
+    state?._setLocale(newLocale);
+  }
 
   @override
   _MyAppState createState() => _MyAppState();
@@ -148,9 +155,9 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             ElevatedButton(
-              child: const Text('Page 4'),
+              child: const Text('Airplane Page'),
               onPressed: () {
-                // Navigator.push(context, MaterialPageRoute(builder: (context) => Page4()));
+                Navigator.push(context, MaterialPageRoute(builder: (context) => AirplanePage()));
               },
             ),
           ],
