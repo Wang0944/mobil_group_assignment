@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'Flights/flights_page.dart';
 import 'customer_page.dart';
 import 'reservation_page.dart';
 import 'app_localizations.dart';
@@ -118,17 +119,24 @@ class _MainPageState extends State<MainPage> {
               },
             ),
             ElevatedButton(
+
               child: const Text('Reservation Page'),
               onPressed: () {
                 Navigator.push(
                   context,
                   MaterialPageRoute(builder: (context) => ReservationPage(setLocale: widget.setLocale)),
                 );
+
               },
             ),
             ElevatedButton(
-              child: const Text('Page 3'),
+              child: const Text('Flights'),
               onPressed: () {
+
+             Navigator.push(
+           context,
+            MaterialPageRoute(builder: (context) => FlightsPage()),
+             );
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => Page3()));
               },
             ),
@@ -143,4 +151,4 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-}
+
