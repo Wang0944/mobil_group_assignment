@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'app_localizations.dart'; // 导入本地化类
 import 'customer_database.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:encrypted_shared_preferences/encrypted_shared_preferences.dart'; // 添加这个导入
 import 'package:floor/floor.dart';
 import 'package:path/path.dart';
 import 'package:sqflite/sqflite.dart' as sqflite;
@@ -9,8 +9,7 @@ import 'dart:async';
 
 class CustomerPage extends StatefulWidget {
   final Function(Locale) setLocale;
-
-  const CustomerPage({super.key, required this.setLocale});
+  const CustomerPage({Key? key, required this.setLocale}) : super(key: key);
 
   @override
   _CustomerPageState createState() => _CustomerPageState();
@@ -24,18 +23,28 @@ class _CustomerPageState extends State<CustomerPage> {
   final lastNameController = TextEditingController();
   final addressController = TextEditingController();
   final birthdayController = TextEditingController();
+  final EncryptedSharedPreferences _encryptedSharedPreferences = EncryptedSharedPreferences();
+  bool _isLoading = true;
 
   @override
   void initState() {
     super.initState();
-    initDatabase();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    await initDatabase();
+    await loadPreferences();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   Future<void> initDatabase() async {
     final databasePath = await sqflite.getDatabasesPath();
     final path = join(databasePath, 'customer_database.db');
     database = await $FloorAppDatabase.databaseBuilder(path).build();
-    loadCustomers();
+    await loadCustomers();
   }
 
   Future<void> loadCustomers() async {
@@ -45,36 +54,48 @@ class _CustomerPageState extends State<CustomerPage> {
 
   Future<void> insertCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.insertCustomer(customer);
-    loadCustomers();
+    await loadCustomers();
     showSnackbar(context, AppLocalizations.of(context).translate('customer_added'));
   }
 
   Future<void> updateCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.updateCustomer(customer);
-    loadCustomers();
+    await loadCustomers();
     showSnackbar(context, AppLocalizations.of(context).translate('customer_updated'));
   }
 
   Future<void> deleteCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.deleteCustomer(customer);
-    loadCustomers();
+    await loadCustomers();
     showSnackbar(context, AppLocalizations.of(context).translate('customer_deleted'));
   }
 
   Future<void> savePreferences(Customer customer) async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('firstName', customer.firstName);
-    await prefs.setString('lastName', customer.lastName);
-    await prefs.setString('address', customer.address);
-    await prefs.setString('birthday', customer.birthday);
+    try {
+      await _encryptedSharedPreferences.setString('firstName', customer.firstName);
+      await _encryptedSharedPreferences.setString('lastName', customer.lastName);
+      await _encryptedSharedPreferences.setString('address', customer.address);
+      await _encryptedSharedPreferences.setString('birthday', customer.birthday);
+    } catch (e) {
+      print('Error saving preferences: $e');
+    }
   }
 
   Future<void> loadPreferences() async {
-    final prefs = await SharedPreferences.getInstance();
-    firstNameController.text = prefs.getString('firstName') ?? '';
-    lastNameController.text = prefs.getString('lastName') ?? '';
-    addressController.text = prefs.getString('address') ?? '';
-    birthdayController.text = prefs.getString('birthday') ?? '';
+    try {
+      String? firstName = await _encryptedSharedPreferences.getString('firstName');
+      String? lastName = await _encryptedSharedPreferences.getString('lastName');
+      String? address = await _encryptedSharedPreferences.getString('address');
+      String? birthday = await _encryptedSharedPreferences.getString('birthday');
+      setState(() {
+        firstNameController.text = firstName ?? '';
+        lastNameController.text = lastName ?? '';
+        addressController.text = address ?? '';
+        birthdayController.text = birthday ?? '';
+      });
+    } catch (e) {
+      print('Error loading preferences: $e');
+    }
   }
 
   void clearForm() {
@@ -95,8 +116,7 @@ class _CustomerPageState extends State<CustomerPage> {
   }
 
   void showSnackbar(BuildContext context, String message) {
-    final snackBar = SnackBar(content: Text(message));
-    ScaffoldMessenger.of(context).showSnackBar(snackBar);
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void showDeleteConfirmationDialog(BuildContext context, Customer customer) {
@@ -109,9 +129,7 @@ class _CustomerPageState extends State<CustomerPage> {
           actions: [
             TextButton(
               child: Text(AppLocalizations.of(context).translate('no')),
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
             ),
             TextButton(
               child: Text(AppLocalizations.of(context).translate('yes')),
@@ -128,46 +146,41 @@ class _CustomerPageState extends State<CustomerPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_isLoading) {
+      return Center(child: CircularProgressIndicator());
+    }
+
     var size = MediaQuery.of(context).size;
     var isLandscape = size.width > size.height && size.width > 720;
-
     return Scaffold(
       appBar: AppBar(
         title: Text(AppLocalizations.of(context).translate('customer_page')),
         actions: [
           TextButton(
             child: Text('中文'),
-            onPressed: () {
-              widget.setLocale(Locale('zh'));
-            },
+            onPressed: () => widget.setLocale(Locale('zh')),
           ),
           TextButton(
             child: Text('English'),
-            onPressed: () {
-              widget.setLocale(Locale('en'));
-            },
+            onPressed: () => widget.setLocale(Locale('en')),
           ),
           IconButton(
             icon: const Icon(Icons.info),
-            onPressed: () {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: Text(AppLocalizations.of(context).translate('instructions')),
-                    content: Text(AppLocalizations.of(context).translate('instructions_content')),
-                    actions: [
-                      TextButton(
-                        child: Text(AppLocalizations.of(context).translate('ok')),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+            onPressed: () => showDialog(
+              context: context,
+              builder: (BuildContext context) {
+                return AlertDialog(
+                  title: Text(AppLocalizations.of(context).translate('instructions')),
+                  content: Text(AppLocalizations.of(context).translate('instructions_content')),
+                  actions: [
+                    TextButton(
+                      child: Text(AppLocalizations.of(context).translate('ok')),
+                      onPressed: () => Navigator.of(context).pop(),
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
         ],
       ),
@@ -206,21 +219,11 @@ class _CustomerPageState extends State<CustomerPage> {
                   children: [
                     IconButton(
                       icon: const Icon(Icons.edit),
-                      onPressed: () {
-                        setState(() {
-                          firstNameController.text = customers[index].firstName;
-                          lastNameController.text = customers[index].lastName;
-                          addressController.text = customers[index].address;
-                          birthdayController.text = customers[index].birthday;
-                          selectedCustomer = customers[index];
-                        });
-                      },
+                      onPressed: () => selectCustomer(customers[index]),
                     ),
                     IconButton(
                       icon: const Icon(Icons.delete),
-                      onPressed: () {
-                        showDeleteConfirmationDialog(context, customers[index]);
-                      },
+                      onPressed: () => showDeleteConfirmationDialog(context, customers[index]),
                     ),
                   ],
                 ),
@@ -237,11 +240,7 @@ class _CustomerPageState extends State<CustomerPage> {
     return Scaffold(
       appBar: showBackButton
           ? AppBar(
-        leading: BackButton(onPressed: () {
-          setState(() {
-            selectedCustomer = null;
-          });
-        }),
+        leading: BackButton(onPressed: () => setState(() => selectedCustomer = null)),
         title: Text(AppLocalizations.of(context).translate('customer_details')),
       )
           : null,
@@ -287,7 +286,7 @@ class _CustomerPageState extends State<CustomerPage> {
                     birthday: birthdayController.text,
                   );
                   await insertCustomer(context, newCustomer);
-                  savePreferences(newCustomer);
+                  await savePreferences(newCustomer);
                   clearForm();
                 } else {
                   showSnackbar(context, AppLocalizations.of(context).translate('all_fields_required'));
@@ -298,12 +297,13 @@ class _CustomerPageState extends State<CustomerPage> {
             ElevatedButton(
               child: Text(AppLocalizations.of(context).translate('update')),
               onPressed: () async {
-                if (firstNameController.text.isNotEmpty &&
+                if (selectedCustomer != null &&
+                    firstNameController.text.isNotEmpty &&
                     lastNameController.text.isNotEmpty &&
                     addressController.text.isNotEmpty &&
                     birthdayController.text.isNotEmpty) {
                   final updatedCustomer = Customer(
-                    id: selectedCustomer?.id,
+                    id: selectedCustomer!.id,
                     firstName: firstNameController.text,
                     lastName: lastNameController.text,
                     address: addressController.text,
