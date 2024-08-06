@@ -14,7 +14,7 @@ class CustomerPage extends StatefulWidget {
   @override
   _CustomerPageState createState() => _CustomerPageState();
 }
-
+// this is customer page
 class _CustomerPageState extends State<CustomerPage> {
   late AppDatabase database;
   List<Customer> customers = [];
@@ -32,6 +32,7 @@ class _CustomerPageState extends State<CustomerPage> {
     _initializeData();
   }
 
+  // this is for initial data
   Future<void> _initializeData() async {
     await initDatabase();
     await loadPreferences();
@@ -46,30 +47,30 @@ class _CustomerPageState extends State<CustomerPage> {
     database = await $FloorAppDatabase.databaseBuilder(path).build();
     await loadCustomers();
   }
-
+  // for load customers
   Future<void> loadCustomers() async {
     customers = await database.customerDao.findAllCustomers();
     setState(() {});
   }
-
+  //insert customer
   Future<void> insertCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.insertCustomer(customer);
     await loadCustomers();
     showSnackbar(context, AppLocalizations.of(context).translate('customer_added'));
   }
-
+  //update customer
   Future<void> updateCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.updateCustomer(customer);
     await loadCustomers();
     showSnackbar(context, AppLocalizations.of(context).translate('customer_updated'));
   }
-
+  // delete customer
   Future<void> deleteCustomer(BuildContext context, Customer customer) async {
     await database.customerDao.deleteCustomer(customer);
     await loadCustomers();
     showSnackbar(context, AppLocalizations.of(context).translate('customer_deleted'));
   }
-
+  //to save customer
   Future<void> savePreferences(Customer customer) async {
     try {
       await _encryptedSharedPreferences.setString('firstName', customer.firstName);
@@ -80,7 +81,7 @@ class _CustomerPageState extends State<CustomerPage> {
       print('Error saving preferences: $e');
     }
   }
-
+  //use encrypted shared pre ference to load
   Future<void> loadPreferences() async {
     try {
       String? firstName = await _encryptedSharedPreferences.getString('firstName');
@@ -97,7 +98,7 @@ class _CustomerPageState extends State<CustomerPage> {
       print('Error loading preferences: $e');
     }
   }
-
+  // this is for clear form
   void clearForm() {
     firstNameController.clear();
     lastNameController.clear();
@@ -105,6 +106,7 @@ class _CustomerPageState extends State<CustomerPage> {
     birthdayController.clear();
   }
 
+  // for select customer
   void selectCustomer(Customer customer) {
     setState(() {
       selectedCustomer = customer;
@@ -114,11 +116,11 @@ class _CustomerPageState extends State<CustomerPage> {
       birthdayController.text = customer.birthday;
     });
   }
-
+  // this is the snackbar
   void showSnackbar(BuildContext context, String message) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
-
+  // this is the method to  show the delete dialog
   void showDeleteConfirmationDialog(BuildContext context, Customer customer) {
     showDialog(
       context: context,
@@ -187,7 +189,7 @@ class _CustomerPageState extends State<CustomerPage> {
       body: isLandscape ? buildLandscapeLayout(context) : buildPortraitLayout(context),
     );
   }
-
+  // for the format of layout
   Widget buildLandscapeLayout(BuildContext context) {
     return Row(
       children: [
@@ -202,7 +204,7 @@ class _CustomerPageState extends State<CustomerPage> {
         ? buildCustomerListView(context, showForm: true)
         : buildCustomerDetailsView(context, showBackButton: true);
   }
-
+  // the method for listview
   Widget buildCustomerListView(BuildContext context, {bool showForm = false}) {
     return Column(
       children: [
