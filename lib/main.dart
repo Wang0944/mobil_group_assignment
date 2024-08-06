@@ -66,7 +66,10 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+        backgroundColor: Theme
+            .of(context)
+            .colorScheme
+            .inversePrimary,
         title: Text(widget.title),
         actions: [
           TextButton(
@@ -88,11 +91,14 @@ class _MainPageState extends State<MainPage> {
                 context: context,
                 builder: (BuildContext context) {
                   return AlertDialog(
-                    title: Text(AppLocalizations.of(context).translate('instructions')),
-                    content: Text(AppLocalizations.of(context).translate('instructions_content')),
+                    title: Text(
+                        AppLocalizations.of(context).translate('instructions')),
+                    content: Text(AppLocalizations.of(context).translate(
+                        'instructions_content')),
                     actions: [
                       TextButton(
-                        child: Text(AppLocalizations.of(context).translate('ok')),
+                        child: Text(AppLocalizations.of(context).translate(
+                            'ok')),
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
@@ -110,11 +116,13 @@ class _MainPageState extends State<MainPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             ElevatedButton(
-              child: Text(AppLocalizations.of(context).translate('customer_page')),
+              child: Text(
+                  AppLocalizations.of(context).translate('customer_page')),
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => CustomerPage(setLocale: widget.setLocale)),
+                  MaterialPageRoute(builder: (context) =>
+                      CustomerPage(setLocale: widget.setLocale)),
                 );
               },
             ),
@@ -124,19 +132,18 @@ class _MainPageState extends State<MainPage> {
               onPressed: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (context) => ReservationPage(setLocale: widget.setLocale)),
+                  MaterialPageRoute(builder: (context) =>
+                      ReservationPage(setLocale: widget.setLocale)),
                 );
-
               },
             ),
             ElevatedButton(
               child: const Text('Flights'),
               onPressed: () {
-
-             Navigator.push(
-           context,
-            MaterialPageRoute(builder: (context) => FlightsPage()),
-             );
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => FlightsPage()),
+                );
                 // Navigator.push(context, MaterialPageRoute(builder: (context) => Page3()));
               },
             ),
@@ -151,4 +158,4 @@ class _MainPageState extends State<MainPage> {
       ),
     );
   }
-
+}
