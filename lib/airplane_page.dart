@@ -46,6 +46,7 @@ class _AirplanePageState extends State<AirplanePage> {
   void initState () {
     super.initState();
 
+
     $FloorAppDatabase.databaseBuilder('myDatabaseFile.db').build().then((database) {
       myDAO = database.getAirplaneDao;
 
@@ -64,7 +65,11 @@ class _AirplanePageState extends State<AirplanePage> {
       }
     });
 
+
   }
+
+
+
 
   void showSnackbar(BuildContext context, String message) {
     final snackBar = SnackBar(content: Text(message));
@@ -239,6 +244,7 @@ class _AirplanePageState extends State<AirplanePage> {
                           int.parse(passengersController.text), double.parse(maxSpeedController.text),
                           double.parse(distanceController.text));
 
+                      await savedData.setString("Type",typeController.value.text);
                       setState(() {
                         airplanes.add(input);
                         myDAO.insertAirplane(input);
@@ -247,7 +253,7 @@ class _AirplanePageState extends State<AirplanePage> {
                         maxSpeedController.text = "";
                         distanceController.text = "";
                       });
-                      await savedData.setString("Type",typeController.value.text);
+
                       showSnackbar(context, AppLocalizations.of(context)!.translate('airplane_added')!);
 
                     } else {
@@ -323,12 +329,14 @@ class _AirplanePageState extends State<AirplanePage> {
           actions: [
             OutlinedButton(onPressed: () {
               setState(() {
+                if (selectedAirplane != null) {
+                  typeController.text = "";
+                  passengersController.text = "";
+                  maxSpeedController.text = "";
+                  distanceController.text = "";
+                }
                 showAddForm = true;
                 selectedAirplane = null;
-                typeController.text = "";
-                passengersController.text = "";
-                maxSpeedController.text = "";
-                distanceController.text = "";
               });
 
             }, child:Text(AppLocalizations.of(context)!.translate('add')!)),
